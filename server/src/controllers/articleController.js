@@ -180,11 +180,15 @@ exports.approve = async (req, res) => {
   </div>
   `;
 
-  await sendEmail({
-    to: art.author.email,
-    subject: `Your Article "${art.title}" is Approved`,
-    html
-  });
+try {
+    await sendEmail({
+      to: art.author.email,
+      subject: `Your Article "${art.title}" is Approved`,
+      html
+    });
+} catch (err) {
+  console.error("Email failed but article approval still saved:", err);
+}
 
   res.json(art);
 };
@@ -233,11 +237,15 @@ exports.reject = async (req, res) => {
   </div>
   `;
 
-  await sendEmail({
-    to: art.author.email,
-    subject: `Your Article "${art.title}" is Rejected`,
-    html
-  });
+  try {
+    await sendEmail({
+      to: art.author.email,
+      subject: `Your Article "${art.title}" is Rejected`,
+      html
+    });
+  } catch (err) {
+    console.error("Email failed but article rejected still saved:", err);
+  }
 
   res.json(art);
 };

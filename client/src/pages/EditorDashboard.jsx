@@ -45,20 +45,23 @@ export default function EditorDashboard() {
 
 
   const approve = async (id) => {
-    if (approveLoading[id]) return;
+      if (approveLoading[id]) return;
+  setApproveLoading((prev) => ({ ...prev, [id]: true }));
 
-    setApproveLoading((prev) => ({ ...prev, [id]: true }));
-
-    try {
-      await API.patch(`/articles/${id}/approve`);
-      alert("Approved — email sent");
-      load();
-    } catch (err) {
-      alert(err.response?.data?.message || err.message);
+  try {
+    const res = await API.patch(`/articles/${id}/approve`);
+    if (res.data.emailStatus === "failed") {
+      alert(`Article approved, but email failed: ${res.data.emailError}`);
+    } else {
+      alert("Article approved successfully and email sent!");
     }
+    load();
+  } catch (err) {
+    alert(err.response?.data?.message || err.message);
+  }
 
-    setApproveLoading((prev) => ({ ...prev, [id]: false }));
-  };
+  setApproveLoading((prev) => ({ ...prev, [id]: false }));
+};
 
 
   const reject = async (id) => {
@@ -70,12 +73,16 @@ export default function EditorDashboard() {
     setRejectLoading((prev) => ({ ...prev, [id]: true }));
 
     try {
-      await API.patch(`/articles/${id}/reject`, { comment });
-      alert("Rejected — email sent");
-      load();
-    } catch (err) {
-      alert(err.response?.data?.message || err.message);
+    const res = await API.patch(`/articles/${id}/reject`, { comment });
+    if (res.data.emailStatus === "failed") {
+      alert(`Article rejected, but email failed: ${res.data.emailError}`);
+    } else {
+      alert("Article rejected successfully and email sent!");
     }
+    load();
+  } catch (err) {
+    alert(err.response?.data?.message || err.message);
+  }
 
     setRejectLoading((prev) => ({ ...prev, [id]: false }));
   };

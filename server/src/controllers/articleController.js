@@ -180,18 +180,25 @@ exports.approve = async (req, res) => {
   </div>
   `;
 
-try {
+ let emailError = null;
+  try {
     await sendEmail({
       to: art.author.email,
       subject: `Your Article "${art.title}" is Approved`,
       html
     });
-} catch (err) {
-  console.error("Email failed but article approval still saved:", err);
-}
+  } catch (err) {
+    console.error("Email failed but article approval still saved:", err);
+    emailError = err.message || "Email sending failed";
+  }
 
-  res.json(art);
+  res.json({
+    article: art,
+    emailStatus: emailError ? "failed" : "sent",
+    emailError
+  });
 };
+
 
 // this is used to reject the article
 exports.reject = async (req, res) => {
@@ -237,6 +244,7 @@ exports.reject = async (req, res) => {
   </div>
   `;
 
+  let emailError = null;
   try {
     await sendEmail({
       to: art.author.email,
@@ -245,9 +253,14 @@ exports.reject = async (req, res) => {
     });
   } catch (err) {
     console.error("Email failed but article rejected still saved:", err);
+    emailError = err.message || "Email sending failed";
   }
 
-  res.json(art);
+  res.json({
+    article: art,
+    emailStatus: emailError ? "failed" : "sent",
+    emailError
+  });
 };
 
 //this is used to get the approved artcile by the particlur author

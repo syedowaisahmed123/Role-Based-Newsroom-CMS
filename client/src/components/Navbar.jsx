@@ -8,7 +8,8 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const nav = useNavigate();
   const { darkMode, toggleDarkMode } = useDarkMode();
-  const firstName = user?.name.split(" ")[0];
+    const firstName = user?.name?.split(" ")[0] ?? "";
+
 
 
   return (
